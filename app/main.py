@@ -1,18 +1,36 @@
-# app/app.py
-from fastapi import FastAPI
-from app.services import telnyx_cc, memory
-import app.dialer as dialer
+# app/main.py
+import os
+import telnyx
+from flask import Flask, request, jsonify
+from app.extensions import socketio
 
-app = FastAPI(title="AI Dialer")
+telnyx.api_key = os.getenv("TELNYX_API_KEY")
 
-@app.get("/")
-def root():
-    return {"status": "ok", "message": "AI Dialer API is running"}
+app = Flask(__name__)
+socketio.init_app(app)
 
-@app.post("/call/start")
-def start_call(number: str):
-    return dialer.start_call(number)
+@app.route("/")
+def home():
+    return "✅ AI-Agent with Telnyx running!"
 
-@app.post("/call/status")
-def call_status():
-    return dialer.get_status()
+# 🔹 Telnyx webhook route
+@app.route("/webhook/telnyx", methods=["POST"])
+def telnyx_webhook():
+    event = request.get_json()
+
+    if not event or "data" not in event:
+        return jsonify({"error": "Invalid event"}), 400
+
+    event_type = event["data"]["event_type"]
+    call_control_id = event["data"]["payload"].get("call_control_id")
+
+    print(f"📞 Telnyx event: {event_type}, CallControlID: {call_control_id}")
+
+    # Emit to dashboard via SocketIO
+    socketio.emit("telnyx_event", {
+        "event_type": event_type,
+        "call_control_id": call_control_id,
+        "raw": event
+    })
+
+    return jsonify({"status": "ok"}), 200

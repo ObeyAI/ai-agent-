@@ -1,12 +1,6 @@
-from app.app import create_app
-from app.dialer import start_dialer_thread
-import threading
-import os
+# run.py
+from app.main import app
+from app.extensions import socketio
 
 if __name__ == "__main__":
-    # start dialer thread (daemon)
-    start_dialer_thread()
-    # start flask
-    app = create_app()
-    port = int(os.getenv("PORT", "5000"))
-    app.run(host="0.0.0.0", port=port, debug=False, threaded=True)
+    socketio.run(app, host="0.0.0.0", port=5000, debug=True)

@@ -1,7 +1,7 @@
-fastapi
-uvicorn
-telnyx
-websockets
-sqlalchemy
-redis
-jinja2
+flask
+flask-socketio
+eventlet
+requests
+python-dotenv
+gunicorn
+openai

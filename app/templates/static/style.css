@@ -1,0 +1,4 @@
+body { font-family: Arial, sans-serif; background: #f9f9f9; padding: 20px; }
+h1 { color: #333; }
+table { border-collapse: collapse; width: 80%; margin-top: 20px; }
+th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
